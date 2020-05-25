@@ -6,10 +6,6 @@ variable provider_url {
   default = "https://localhost:8200"
 }
 
-variable namespace_configs {
-  type = list
-}
-
 variable namespace_policies {
   type = list
 }

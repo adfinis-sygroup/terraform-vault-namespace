@@ -9,7 +9,6 @@ provider "vault" {
   #    }
   #  }
   address         = var.provider_url
-  skip_tls_verify = true
   alias           = "root"
 }
 
@@ -21,14 +20,13 @@ resource "vault_namespace" "namespace" {
 provider "vault" {
   version         = "~> 2.11"
   address         = var.provider_url
-  skip_tls_verify = true
   alias           = "ns"
   namespace       = vault_namespace.namespace.path
 }
 
 resource "vault_policy" "policy" {
   for_each   = var.namespace_policies
-  name       = "${each.value}"
+  name       = split(".", each.value)[0]
   policy     = file("policies/${each.value}")
   depends_on = [vault_namespace.namespace]
   provider   = vault.ns
