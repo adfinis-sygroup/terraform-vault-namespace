@@ -13,7 +13,7 @@ provider "vault" {
   alias = "root"
 }
 
-resource "vault_namespace" var.namespace_name {
+resource "vault_namespace" "namespace" {
   path = var.namespace_name
   provider = vault.root
 }
@@ -23,27 +23,32 @@ provider "vault" {
   address = "https://localhost:8200"
   skip_tls_verify = true
   alias = "ns"
-  namespace = var.namespace_name
+  namespace = vault_namespace.namespace.path
+  depends_on  = [ vault_namespace.namespace ]
 }
 
 resource "vault_policy" "admin_policy" {
   name = "admins"
   policy = file("policies/admin.hcl")
+  depends_on  = [ vault_namespace.namespace ]
   provider = vault.ns
 }
 resource "vault_policy" "provisioner_policy" {
   name = "provisioners"
   policy = file("policies/provisioner.hcl")
+  depends_on  = [ vault_namespace.namespace ]
   provider = vault.ns
 }
 resource "vault_policy" "user_policy" {
   name = "users"
   policy = file("policies/user.hcl")
-  provicer = vault.ns
+  depends_on  = [ vault_namespace.namespace ]
+  provider = vault.ns
 }
 
 resource "vault_ldap_auth_backend" "ldap" {
-    depends_on  = [ vault_namespace.ns1 ]
+    depends_on  = [ vault_namespace.namespace ]
+    provider = vault.ns1
     path        = "${vault_namespace.ns1.path}-ldap"
     url         = "ldaps://dc-01.example.org"
     userdn      = "OU=Users,OU=Accounts,DC=example,DC=org"
@@ -52,5 +57,4 @@ resource "vault_ldap_auth_backend" "ldap" {
     discoverdn  = false
     groupdn     = "OU=Groups,DC=example,DC=org"
     groupfilter = "(&(objectClass=group)(member:1.2.840.113556.1.4.1941:={{.UserDN}}))"
-    provider = vault.ns1
 }
