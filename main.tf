@@ -18,7 +18,7 @@ resource "vault_namespace" "ns1" {
 
 resource "vault_pki_secret_backend" "pki" {
   depends_on = [ vault_namespace.ns1 ]
-  path = "vault_pki_secret_backend.pki.path-pki"
+  path = "${vault_pki_secret_backend.ns1.path}-pki"
   default_lease_ttl_seconds = 3600
   max_lease_ttl_seconds = 86400
 }
