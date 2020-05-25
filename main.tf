@@ -25,7 +25,7 @@ provider "vault" {
 }
 
 resource "vault_policy" "policy" {
-  for_each   = var.namespace_policies
+  for_each   = toset(var.namespace_policies)
   name       = split(".", each.value)[0]
   policy     = file("policies/${each.value}")
   depends_on = [vault_namespace.namespace]
