@@ -8,7 +8,7 @@ provider "vault" {
 #      secret_id = var.login_approle_secret_id
 #    }
 #  }
-  address = https://localhost:8200
+  address = "https://localhost:8200"
   skip_tls_verify = true
 }
 
