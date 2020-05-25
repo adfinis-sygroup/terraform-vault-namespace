@@ -24,7 +24,6 @@ provider "vault" {
   skip_tls_verify = true
   alias = "ns"
   namespace = vault_namespace.namespace.path
-  depends_on  = [ vault_namespace.namespace ]
 }
 
 resource "vault_policy" "admin_policy" {
