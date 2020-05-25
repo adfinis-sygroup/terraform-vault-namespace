@@ -20,7 +20,7 @@ resource "vault_namespace" "namespace" {
 
 provider "vault" {
   version         = "~> 2.11"
-  address         = provider.url
+  address         = var.provider_url
   skip_tls_verify = true
   alias           = "ns"
   namespace       = vault_namespace.namespace.path
