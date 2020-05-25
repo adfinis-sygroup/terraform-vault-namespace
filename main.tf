@@ -17,14 +17,14 @@ resource "vault_namespace" "ns1" {
 }
 
 resource "vault_pki_secret_backend" "pki" {
-  depends_on = [ vault_namespace.ns1 ]
+#  depends_on = [ vault_namespace.ns1 ]
   path = "${vault_namespace.ns1.path}-pki"
   default_lease_ttl_seconds = 3600
   max_lease_ttl_seconds = 86400
 }
 
 resource "vault_pki_secret_backend_config_ca" "intermediate" {
-  depends_on = [ vault_pki_secret_backend.pki ]
+#  depends_on = [ vault_pki_secret_backend.pki ]
 
   backend = vault_pki_secret_backend.pki.path
   pem_bundle = <<EOT
