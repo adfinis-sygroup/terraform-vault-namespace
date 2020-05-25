@@ -8,7 +8,7 @@ provider "vault" {
 #      secret_id = var.login_approle_secret_id
 #    }
 #  }
-  address = "https://localhost:8200"
+  address = "http://localhost:8200"
   skip_tls_verify = true
   alias = "root"
 }
@@ -20,7 +20,7 @@ resource "vault_namespace" "namespace" {
 
 provider "vault" {
   version = "~> 2.11"
-  address = "https://localhost:8200"
+  address = "http://localhost:8200"
   skip_tls_verify = true
   alias = "ns"
   namespace = vault_namespace.namespace.path
