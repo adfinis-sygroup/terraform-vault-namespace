@@ -48,7 +48,7 @@ resource "vault_policy" "user_policy" {
 resource "vault_ldap_auth_backend" "ldap" {
     depends_on  = [ vault_namespace.namespace ]
     provider    = vault.ns
-    path        = "${vault_namespace.ns1.path}-ldap"
+    path        = "${vault_namespace.ns.path}-ldap"
     url         = "ldaps://dc-01.example.org"
     userdn      = "OU=Users,OU=Accounts,DC=example,DC=org"
     userattr    = "sAMAccountName"
