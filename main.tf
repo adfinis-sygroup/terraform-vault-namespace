@@ -92,8 +92,8 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_c
   depends_on           = [vault_mount.pki]
   provider             = vault.ns
   backend              = vault_mount.pki[count.index].path
-  type                 = "internal"
-  common_name          = "app.my.domain"
+  type                 = var.pki_csr_type
+  common_name          = var.pki_csr_common_name
   alt_names            = var.pki_csr_alt_names
   ip_sans              = var.pki_csr_ip_sans
   uri_sans             = var.pki_csr_uri_sans
