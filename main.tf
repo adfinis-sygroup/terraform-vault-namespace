@@ -48,8 +48,8 @@ resource "vault_ldap_auth_backend" "ldap" {
 
 resource "vault_pki_secret_backend" "pki" {
   path                      = var.pki_path
-  default_lease_ttl_seconds = pki_default_lease_ttl_seconds
-  max_lease_ttl_seconds     = pki_max_lease_ttl_seconds
+  default_lease_ttl_seconds = var.pki_default_lease_ttl_seconds
+  max_lease_ttl_seconds     = var.pki_max_lease_ttl_seconds
   count                     = "${var.pki_path != "" ? 1 : 0}"
 }
 
