@@ -22,7 +22,7 @@ provider "vault" {
   version   = "~> 2.11"
   address   = var.provider_url
   alias     = "ns"
-  namespace = vault_namespace.namespace.path
+  namespace = join("/", [var.parent_namespace_name != "root" ? var.parent_namespace_name : "", vault_namespace.namespace.path])
 }
 
 resource "vault_policy" "policy" {
