@@ -85,12 +85,35 @@ resource "vault_pki_secret_backend_role" "role" {
   use_csr_sans                       = var.pki_role_use_csr_sans
 }
 
-resource "vault_pki_secret_backend_config_ca" "intermediate" {
-  depends_on = [vault_mount.pki]
+resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_csr" {
+  depends_on = [ vault_mount.pki ]
   provider   = vault.ns
-  backend    = vault_mount.pki[count.index].path
-  pem_bundle = var.pki_ca_pem_bundle
-  count      = var.pki_path != "" && var.pki_ca_pem_bundle != "" ? 1 : 0
+  backend = vault_mount.pki[count.index].path
+  type = "internal"
+  common_name = "app.my.domain"
+
+  count      = var.pki_path != "" ? 1 : 0
 }
 
+resource "vault_pki_secret_backend_root_sign_intermediate" "intermediate_ca_sign" {
+  depends_on = [ vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr ]
+  provider   = vault.ns
 
+  backend = "pki"
+
+  csr = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
+  common_name = "Intermediate CA"
+  exclude_cn_from_sans = true
+  ou = "My OU"
+  organization = "My organization"
+  count      = var.pki_path != "" ? 1 : 0
+}
+
+resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set_signed" { 
+  depends_on = [ vault_pki_secret_backend_root_sign_intermediate.intermediate_ca_sign ]
+  backend = vault_mount.pki[count.index].path
+  provider   = vault.ns
+
+  certificate = vault_pki_secret_backend_root_sign_intermediate.intermediate_ca_sign[count.index].certificate
+  count      = var.pki_path != "" ? 1 : 0
+}
