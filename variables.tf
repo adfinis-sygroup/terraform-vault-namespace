@@ -226,12 +226,12 @@ variable pki_csr_other_sans {
 
 variable pki_csr_format {
   type    = string
-  default = ""
+  default = "pem"
 }
 
 variable pki_csr_private_key_format {
   type    = string
-  default = ""
+  default = "der"
 }
 
 variable pki_csr_key_type {
