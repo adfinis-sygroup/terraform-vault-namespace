@@ -57,7 +57,7 @@ resource "vault_mount" "pki" {
   seal_wrap = var.pki_seal_wrap
 }
 
-resource "vault_mount_role" "role" {
+resource "vault_pki_secret_backend_role" "role" {
   depends_on = [vault_mount.pki]
   provider   = vault.ns
   backend    = vault_mount.pki[count.index].path
@@ -84,7 +84,7 @@ resource "vault_mount_role" "role" {
   use_csr_sans                       = var.pki_role_use_csr_sans
 }
 
-resource "vault_mount_config_ca" "intermediate" {
+resource "vault_pki_secret_backend_config_ca" "intermediate" {
   depends_on = [vault_mount.pki]
   provider   = vault.ns
   backend    = vault_mount.pki[count.index].path
