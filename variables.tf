@@ -200,7 +200,7 @@ variable pki_csr_type {
 }
 
 variable pki_csr_common_name {
-  type = string
+  type    = string
   default = ""
 }
 
@@ -285,17 +285,17 @@ variable pki_csr_postal_code {
 }
 
 variable pki_csr_sign_ca_pki {
-  type = string
+  type    = string
   default = ""
 }
 
 variable pki_csr_sign_ca_common_name {
-  type = string
+  type    = string
   default = ""
 }
 
 variable pki_csr_sign_ca_use_csr_values {
-  type = bool
+  type    = bool
   default = true
 }
 

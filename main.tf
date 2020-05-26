@@ -115,20 +115,19 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_c
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "csr_sign_ca" {
-  depends_on = [vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr]
-  provider   = vault.parent
-  backend = var.pki_csr_sign_ca_pki
-  csr                  = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
+  depends_on     = [vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr]
+  provider       = vault.parent
+  backend        = var.pki_csr_sign_ca_pki
+  csr            = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
   use_csr_values = var.pki_csr_sign_ca_use_csr_values
-  common_name = var.pki_csr_sign_ca_common_name
-  count                = var.pki_path != "" ? 1 : 0
+  common_name    = var.pki_csr_sign_ca_common_name
+  count          = var.pki_path != "" ? 1 : 0
 }
 
 resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set_signed" {
-  depends_on = [vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca]
-  backend    = vault_mount.pki[count.index].path
-  provider   = vault.ns
-
+  depends_on  = [vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca]
+  backend     = vault_mount.pki[count.index].path
+  provider    = vault.ns
   certificate = vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca[count.index].certificate
   count       = var.pki_path != "" ? 1 : 0
 }
