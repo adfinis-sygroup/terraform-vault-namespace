@@ -8,8 +8,8 @@ provider "vault" {
   #      secret_id = var.login_approle_secret_id
   #    }
   #  }
-  address = var.provider_url
-  alias   = "parent"
+  address   = var.provider_url
+  alias     = "parent"
   namespace = var.parent_namespace_name
 }
 
@@ -51,25 +51,28 @@ resource "vault_mount" "pki" {
   depends_on                = [vault_namespace.namespace]
   provider                  = vault.ns
   path                      = var.pki_path
-  type = "pki"
+  type                      = "pki"
   default_lease_ttl_seconds = var.pki_default_lease_ttl_seconds
   max_lease_ttl_seconds     = var.pki_max_lease_ttl_seconds
   count                     = var.pki_path != "" ? 1 : 0
-  seal_wrap = var.pki_seal_wrap
+  seal_wrap                 = var.pki_seal_wrap
 }
 
 resource "vault_pki_secret_backend_role" "role" {
-  depends_on = [vault_mount.pki]
-  provider   = vault.ns
-  backend    = vault_mount.pki[count.index].path
-  name       = var.pki_role_name
-  count      = var.pki_path != "" ? 1 : 0
+  depends_on                         = [vault_mount.pki]
+  provider                           = vault.ns
+  backend                            = vault_mount.pki[count.index].path
+  name                               = var.pki_role_name
+  count                              = var.pki_path != "" ? 1 : 0
   allow_any_name                     = var.pki_role_allow_any_name
   allow_bare_domains                 = var.pki_role_allow_bare_domains
   allow_glob_domains                 = var.pki_role_allow_glob_domains
   allow_ip_sans                      = var.pki_role_allow_ip_sans
   allow_localhost                    = var.pki_role_allow_localhost
   allow_subdomains                   = var.pki_role_allow_subdomains
+  allowed_domains                    = var.pki_role_allowed_domains
+  allowed_other_sans                 = var.pki_role_allowed_other_sans
+  allowed_uri_sans                   = var.pki_role_allowed_uri_sans
   basic_constraints_valid_for_non_ca = var.pki_role_basic_constraints_valid_for_non_ca
   client_flag                        = var.pki_role_client_flag
   code_signing_flag                  = var.pki_role_code_signing_flag
@@ -86,34 +89,50 @@ resource "vault_pki_secret_backend_role" "role" {
 }
 
 resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_csr" {
-  depends_on = [ vault_mount.pki ]
-  provider   = vault.ns
-  backend = vault_mount.pki[count.index].path
-  type = "internal"
-  common_name = "app.my.domain"
+  depends_on           = [vault_mount.pki]
+  provider             = vault.ns
+  backend              = vault_mount.pki[count.index].path
+  type                 = "internal"
+  common_name          = "app.my.domain"
+  alt_names            = var.pki_csr_alt_names
+  ip_sans              = var.pki_csr_ip_sans
+  uri_sans             = var.pki_csr_uri_sans
+  other_sans           = var.pki_csr_other_sans
+  format               = var.pki_csr_format
+  private_key_format   = var.pki_csr_private_key_format
+  key_type             = var.pki_csr_key_type
+  key_bits             = var.pki_csr_key_bits
+  exclude_cn_from_sans = var.pki_csr_exclude_cn_from_sans
+  ou                   = var.pki_csr_ou
+  organization         = var.pki_csr_organization
+  country              = var.pki_csr_country
+  locality             = var.pki_csr_locality
+  province             = var.pki_csr_province
+  street_address       = var.pki_csr_street_address
+  postal_code          = var.pki_csr_postal_code
 
-  count      = var.pki_path != "" ? 1 : 0
+  count = var.pki_path != "" ? 1 : 0
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "intermediate_ca_sign" {
-  depends_on = [ vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr ]
-  provider   = vault.ns
+  depends_on = [vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr]
+  provider   = vault.parent
 
   backend = "pki"
 
-  csr = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
-  common_name = "Intermediate CA"
+  csr                  = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
+  common_name          = "Intermediate CA"
   exclude_cn_from_sans = true
-  ou = "My OU"
-  organization = "My organization"
-  count      = var.pki_path != "" ? 1 : 0
+  ou                   = "My OU"
+  organization         = "My organization"
+  count                = var.pki_path != "" ? 1 : 0
 }
 
-resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set_signed" { 
-  depends_on = [ vault_pki_secret_backend_root_sign_intermediate.intermediate_ca_sign ]
-  backend = vault_mount.pki[count.index].path
+resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set_signed" {
+  depends_on = [vault_pki_secret_backend_root_sign_intermediate.intermediate_ca_sign]
+  backend    = vault_mount.pki[count.index].path
   provider   = vault.ns
 
   certificate = vault_pki_secret_backend_root_sign_intermediate.intermediate_ca_sign[count.index].certificate
-  count      = var.pki_path != "" ? 1 : 0
+  count       = var.pki_path != "" ? 1 : 0
 }
