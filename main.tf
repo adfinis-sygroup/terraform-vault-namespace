@@ -57,10 +57,10 @@ resource "vault_mount" "pki" {
   seal_wrap = var.pki_seal_wrap
 }
 
-resource "vault_pki_secret_backend_role" "role" {
-  depends_on = [vault_pki_secret_backend.pki]
+resource "vault_mount_role" "role" {
+  depends_on = [vault_mount.pki]
   provider   = vault.ns
-  backend    = vault_pki_secret_backend.pki[count.index].path
+  backend    = vault_mount.pki[count.index].path
   name       = var.pki_role_name
   count      = var.pki_path != "" ? 1 : 0
   allow_any_name                     = var.pki_role_allow_any_name
@@ -84,12 +84,12 @@ resource "vault_pki_secret_backend_role" "role" {
   use_csr_sans                       = var.pki_role_use_csr_sans
 }
 
-resource "vault_pki_secret_backend_config_ca" "intermediate" {
-  depends_on = [vault_pki_secret_backend.pki]
+resource "vault_mount_config_ca" "intermediate" {
+  depends_on = [vault_mount.pki]
   provider   = vault.ns
-  backend    = vault_pki_secret_backend.pki[count.index].path
+  backend    = vault_mount.pki[count.index].path
   pem_bundle = var.pki_ca_pem_bundle
-  count      = var.pki_path != "" && var.pki_pem_bundle != "" ? 1 : 0
+  count      = var.pki_path != "" && var.pki_ca_pem_bundle != "" ? 1 : 0
 }
 
 
