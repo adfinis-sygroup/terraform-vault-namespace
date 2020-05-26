@@ -47,6 +47,7 @@ resource "vault_ldap_auth_backend" "ldap" {
 }
 
 resource "vault_pki_secret_backend" "pki" {
+  depends_on                = [vault_namespace.namespace]
   path                      = var.pki_path
   default_lease_ttl_seconds = var.pki_default_lease_ttl_seconds
   max_lease_ttl_seconds     = var.pki_max_lease_ttl_seconds
@@ -54,15 +55,15 @@ resource "vault_pki_secret_backend" "pki" {
 }
 
 resource "vault_pki_secret_backend_role" "role" {
-  backend = vault_pki_secret_backend.pki.path
-  name    = var.pki_role_name
-  count   = "${var.pki_path != "" ? 1 : 0}"
+  depends_on = [vault_pki_secret_backend[count.index].pki]
+  backend    = vault_pki_secret_backend[count.index].pki.path
+  name       = var.pki_role_name
+  count      = "${var.pki_path != "" ? 1 : 0}"
 }
 
 resource "vault_pki_secret_backend_config_ca" "intermediate" {
-  depends_on = [vault_pki_secret_backend.pki]
-
-  backend    = vault_pki_secret_backend.pki.path
+  depends_on = [vault_pki_secret_backend[count.index].pki]
+  backend    = vault_pki_secret_backend[count.index].pki.path
   pem_bundle = var.pki_bundle
   count      = "${var.pki_path != "" || var.pki_pem_bundle != "" ? 1 : 0}"
 }
