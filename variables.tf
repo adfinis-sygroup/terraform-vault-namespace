@@ -124,6 +124,11 @@ variable pki_role_code_signing_flag {
   default = false
 }
 
+variable pki_role_email_protection_flag {
+  type    = bool
+  default = false
+}
+
 variable pki_role_enforce_hostnames {
   type    = bool
   default = true
