@@ -65,5 +65,5 @@ resource "vault_pki_secret_backend_config_ca" "intermediate" {
   depends_on = [vault_pki_secret_backend.pki]
   backend    = vault_pki_secret_backend.pki[count.index].path
   pem_bundle = var.pki_pem_bundle
-  count      = var.pki_path != "" || var.pki_pem_bundle != "" ? 1 : 0
+  count      = var.pki_path != "" && var.pki_pem_bundle != "" ? 1 : 0
 }
