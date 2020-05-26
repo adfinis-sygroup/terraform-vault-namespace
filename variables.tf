@@ -13,6 +13,7 @@ variable parent_namespace_name {
 
 variable namespace_policies {
   type = list
+  default = []
 }
 
 variable namespace_name {
