@@ -6,6 +6,11 @@ variable provider_url {
   default = "https://localhost:8200"
 }
 
+variable parent_namespace_name {
+  type = string
+  default = "root"
+}
+
 variable namespace_policies {
   type = list
 }

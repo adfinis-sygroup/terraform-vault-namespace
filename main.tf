@@ -9,12 +9,12 @@ provider "vault" {
   #    }
   #  }
   address = var.provider_url
-  alias   = "root"
+  alias   = var.parent_namespace_name
+  namespace = var.parent_namespace_name
 }
 
 resource "vault_namespace" "namespace" {
   path     = var.namespace_name
-  provider = vault.root
 }
 
 provider "vault" {
