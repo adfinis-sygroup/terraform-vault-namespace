@@ -6,6 +6,11 @@ variable provider_url {
   default = "https://localhost:8200"
 }
 
+variable parent_namespace_name {
+  type = string
+  default = "root"
+}
+
 variable namespace_policies {
   type = list
 }
@@ -59,6 +64,11 @@ variable pki_path {
   default = ""
 }
 
+variable pki_seal_wrap {
+  type    = bool
+  default = false
+}
+
 variable pki_default_lease_ttl_seconds {
   type    = number
   default = 3600
@@ -74,7 +84,102 @@ variable pki_role_name {
   default = "pki_role"
 }
 
-variable pki_pem_bundle {
+variable pki_role_allow_any_name {
+  type    = bool
+  default = false
+}
+
+variable pki_role_allow_bare_domains {
+  type    = bool
+  default = false
+}
+
+variable pki_role_allow_glob_domains {
+  type    = bool
+  default = false
+}
+
+variable pki_role_allow_ip_sans {
+  type    = bool
+  default = true
+}
+
+variable pki_role_allow_localhost {
+  type    = bool
+  default = true
+}
+
+variable pki_role_allow_subdomains {
+  type    = bool
+  default = false
+}
+
+variable pki_role_basic_constraints_valid_for_non_ca {
+  type    = bool
+  default = false
+}
+
+variable pki_role_client_flag {
+  type    = bool
+  default = true
+}
+
+variable pki_role_code_signing_flag {
+  type    = bool
+  default = false
+}
+
+variable pki_role_email_protection_flag {
+  type    = bool
+  default = false
+}
+
+variable pki_role_enforce_hostnames {
+  type    = bool
+  default = true
+}
+
+variable pki_role_generate_lease {
+  type    = bool
+  default = false
+}
+
+variable pki_role_key_bits {
+  type = number
+  default = 2048
+}
+
+variable pki_role_key_type {
+  type = string
+  default = "rsa"
+}
+
+variable pki_role_no_store {
+  type    = bool
+  default = false
+}
+
+variable pki_role_require_cn {
+  type    = bool
+  default = true
+}
+
+variable pki_role_server_flag {
+  type    = bool
+  default = true
+}
+
+variable pki_role_use_csr_common_name {
+  type    = bool
+  default = true
+}
+
+variable pki_role_use_csr_sans {
+  type    = bool
+  default = true
+}
+
+variable pki_ca_pem_bundle {
   type    = string
   default = ""
 }
