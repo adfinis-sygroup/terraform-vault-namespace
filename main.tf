@@ -46,13 +46,15 @@ resource "vault_ldap_auth_backend" "ldap" {
   count       = var.ldap_path != "" ? 1 : 0
 }
 
-resource "vault_pki_secret_backend" "pki" {
+resource "vault_mount" "pki" {
   depends_on                = [vault_namespace.namespace]
   provider                  = vault.ns
   path                      = var.pki_path
+  type = "pki"
   default_lease_ttl_seconds = var.pki_default_lease_ttl_seconds
   max_lease_ttl_seconds     = var.pki_max_lease_ttl_seconds
   count                     = var.pki_path != "" ? 1 : 0
+  seal_wrap = var.pki_seal_wrap
 }
 
 resource "vault_pki_secret_backend_role" "role" {
@@ -70,3 +72,5 @@ resource "vault_pki_secret_backend_config_ca" "intermediate" {
   pem_bundle = var.pki_pem_bundle
   count      = var.pki_path != "" && var.pki_pem_bundle != "" ? 1 : 0
 }
+
+

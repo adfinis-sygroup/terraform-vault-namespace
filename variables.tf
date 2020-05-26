@@ -59,6 +59,11 @@ variable pki_path {
   default = ""
 }
 
+variable pki_seal_wrap {
+  type    = bool
+  default = false
+}
+
 variable pki_default_lease_ttl_seconds {
   type    = number
   default = 3600
