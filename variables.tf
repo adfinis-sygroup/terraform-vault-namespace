@@ -201,6 +201,7 @@ variable pki_csr_type {
 
 variable pki_csr_common_name {
   type = string
+  default = ""
 }
 
 variable pki_csr_alt_names {
