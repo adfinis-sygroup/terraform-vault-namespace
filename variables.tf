@@ -236,17 +236,17 @@ variable pki_csr_private_key_format {
 
 variable pki_csr_key_type {
   type    = string
-  default = ""
+  default = "rsa"
 }
 
 variable pki_csr_key_bits {
-  type    = string
-  default = ""
+  type    = number
+  default = 2048
 }
 
 variable pki_csr_exclude_cn_from_sans {
-  type    = string
-  default = ""
+  type    = bool
+  default = false
 }
 
 variable pki_csr_ou {
