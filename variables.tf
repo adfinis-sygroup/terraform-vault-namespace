@@ -283,8 +283,8 @@ variable pki_csr_postal_code {
   default = ""
 }
 
-variable pki_csr_sign_ {
-}
+#variable pki_csr_sign_ {
+#}
 
-variable pki_signed_ca_ {
-}
+#variable pki_signed_ca_ {
+#}
