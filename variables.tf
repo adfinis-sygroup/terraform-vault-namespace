@@ -16,7 +16,7 @@ variable namespace_name {
 
 variable ldap_path {
   type    = string
-  default = "ldap"
+  default = ""
 }
 
 variable ldap_url {
@@ -52,4 +52,29 @@ variable ldap_groupdn {
 variable ldap_groupfilter {
   type    = string
   default = "(&(objectClass=group)(member:1.2.840.113556.1.4.1941:={{.UserDN}}))"
+}
+
+variable pki_path {
+  type = string
+  default = ""
+}
+
+variable pki_default_lease_ttl_seconds {
+  type = number
+  default = 3600
+}
+
+variable pki_max_lease_ttl_seconds {
+  type = number
+  default = 86400
+}
+
+variable pki_role_name {
+  type = string
+  default = "pki_role"
+}
+
+variable pki_bundle {
+  type = string
+  default = ""
 }
