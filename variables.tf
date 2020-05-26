@@ -284,8 +284,20 @@ variable pki_csr_postal_code {
   default = ""
 }
 
-#variable pki_csr_sign_ {
-#}
+variable pki_csr_sign_ca_pki {
+  type = string
+  default = ""
+}
+
+variable pki_csr_sign_ca_common_name {
+  type = string
+  default = ""
+}
+
+variable pki_csr_sign_ca_use_csr_values {
+  type = bool
+  default = true
+}
 
 #variable pki_signed_ca_ {
 #}
