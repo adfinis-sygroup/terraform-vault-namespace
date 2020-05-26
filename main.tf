@@ -63,13 +63,32 @@ resource "vault_pki_secret_backend_role" "role" {
   backend    = vault_pki_secret_backend.pki[count.index].path
   name       = var.pki_role_name
   count      = var.pki_path != "" ? 1 : 0
+  allow_any_name                     = var.pki_role_allow_any_name
+  allow_bare_domains                 = var.pki_role_allow_bare_domains
+  allow_glob_domains                 = var.pki_role_allow_glob_domains
+  allow_ip_sans                      = var.pki_role_allow_ip_sans
+  allow_localhost                    = var.pki_role_allow_localhost
+  allow_subdomains                   = var.pki_role_allow_subdomains
+  basic_constraints_valid_for_non_ca = var.pki_role_basic_constraints_valid_for_non_ca
+  client_flag                        = var.pki_role_client_flag
+  code_signing_flag                  = var.pki_role_code_signing_flag
+  email_protection_flag              = var.pki_role_email_protection_flag
+  enforce_hostnames                  = var.pki_role_enforce_hostnames
+  generate_lease                     = var.pki_role_generate_lease
+  key_bits                           = var.pki_role_key_bits
+  key_type                           = var.pki_role_key_type
+  no_store                           = var.pki_role_no_store
+  require_cn                         = var.pki_role_require_cn
+  server_flag                        = var.pki_role_server_flag
+  use_csr_common_name                = var.pki_role_use_csr_common_name
+  use_csr_sans                       = var.pki_role_use_csr_sans
 }
 
 resource "vault_pki_secret_backend_config_ca" "intermediate" {
   depends_on = [vault_pki_secret_backend.pki]
   provider   = vault.ns
   backend    = vault_pki_secret_backend.pki[count.index].path
-  pem_bundle = var.pki_pem_bundle
+  pem_bundle = var.pki_ca_pem_bundle
   count      = var.pki_path != "" && var.pki_pem_bundle != "" ? 1 : 0
 }
 
