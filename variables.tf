@@ -7,7 +7,7 @@ variable provider_url {
 }
 
 variable parent_namespace_name {
-  type = string
+  type    = string
   default = "root"
 }
 
@@ -114,6 +114,21 @@ variable pki_role_allow_subdomains {
   default = false
 }
 
+variable pki_role_allowed_domains {
+  type    = list
+  default = []
+}
+
+variable pki_role_allowed_other_sans {
+  type    = list
+  default = []
+}
+
+variable pki_role_allowed_uri_sans {
+  type    = list
+  default = []
+}
+
 variable pki_role_basic_constraints_valid_for_non_ca {
   type    = bool
   default = false
@@ -145,12 +160,12 @@ variable pki_role_generate_lease {
 }
 
 variable pki_role_key_bits {
-  type = number
+  type    = number
   default = 2048
 }
 
 variable pki_role_key_type {
-  type = string
+  type    = string
   default = "rsa"
 }
 
@@ -179,7 +194,110 @@ variable pki_role_use_csr_sans {
   default = true
 }
 
-variable pki_ca_pem_bundle {
+variable pki_csr_type {
+  type    = string
+  default = "internal"
+}
+
+variable pki_csr_common_name {
   type    = string
   default = ""
 }
+
+variable pki_csr_alt_names {
+  type    = list
+  default = []
+}
+
+variable pki_csr_ip_sans {
+  type    = list
+  default = []
+}
+
+variable pki_csr_uri_sans {
+  type    = list
+  default = []
+}
+
+variable pki_csr_other_sans {
+  type    = list
+  default = []
+}
+
+variable pki_csr_format {
+  type    = string
+  default = "pem"
+}
+
+variable pki_csr_private_key_format {
+  type    = string
+  default = "der"
+}
+
+variable pki_csr_key_type {
+  type    = string
+  default = "rsa"
+}
+
+variable pki_csr_key_bits {
+  type    = number
+  default = 2048
+}
+
+variable pki_csr_exclude_cn_from_sans {
+  type    = bool
+  default = false
+}
+
+variable pki_csr_ou {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_organization {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_country {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_locality {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_province {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_street_address {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_postal_code {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_sign_ca_pki {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_sign_ca_common_name {
+  type    = string
+  default = ""
+}
+
+variable pki_csr_sign_ca_use_csr_values {
+  type    = bool
+  default = true
+}
+
+#variable pki_signed_ca_ {
+#}
