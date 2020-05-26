@@ -55,26 +55,26 @@ variable ldap_groupfilter {
 }
 
 variable pki_path {
-  type = string
+  type    = string
   default = ""
 }
 
 variable pki_default_lease_ttl_seconds {
-  type = number
+  type    = number
   default = 3600
 }
 
 variable pki_max_lease_ttl_seconds {
-  type = number
+  type    = number
   default = 86400
 }
 
 variable pki_role_name {
-  type = string
+  type    = string
   default = "pki_role"
 }
 
-variable pki_bundle {
-  type = string
+variable pki_pem_bundle {
+  type    = string
   default = ""
 }
