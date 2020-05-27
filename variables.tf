@@ -60,6 +60,16 @@ variable ldap_groupfilter {
   default = "(&(objectClass=group)(member:1.2.840.113556.1.4.1941:={{.UserDN}}))"
 }
 
+variable ldap_provider {
+  type    = string
+  default = ""
+}
+
+variable ldap_groups {
+  type    = list
+  default = []
+}
+
 variable pki_path {
   type    = string
   default = ""
