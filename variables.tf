@@ -60,12 +60,12 @@ variable ldap_groupfilter {
 }
 
 variable ldap_provider {
-  type = string
+  type    = string
   default = ""
 }
 
 variable ldap_groups {
-  type = list
+  type    = list
   default = []
 }
 
