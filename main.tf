@@ -1,4 +1,10 @@
 provider "vault" {
+  version   = "~> 2.11"
+  address   = var.provider_url
+  alias     = "root"
+}
+
+provider "vault" {
   version = "~> 2.11"
   #  auth_login {
   #    path = "auth/approle/login"
@@ -13,16 +19,16 @@ provider "vault" {
   namespace = var.parent_namespace_name
 }
 
-resource "vault_namespace" "namespace" {
-  path     = var.namespace_name
-  provider = vault.parent
-}
-
 provider "vault" {
   version   = "~> 2.11"
   address   = var.provider_url
   alias     = "ns"
   namespace = join("/", [var.parent_namespace_name != "root" ? var.parent_namespace_name : "", vault_namespace.namespace.path])
+}
+
+resource "vault_namespace" "namespace" {
+  path     = var.namespace_name
+  provider = vault.parent
 }
 
 resource "vault_policy" "policy" {
@@ -47,23 +53,60 @@ resource "vault_ldap_auth_backend" "ldap" {
   count       = var.ldap_path != "" ? 1 : 0
 }
 
+data "vault_auth_backend" "ldap" {
+  depends_on  = [vault_ldap_auth_backend.ldap]
+  path = var.ldap_provider
+  provider = vault.root
+}
+
+resource "vault_identity_group" "root_group" {
+  count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
+
+  depends_on  = [vault_ldap_auth_backend.ldap]
+  name     = join("-", [var.ldap_provider, split(".", var.ldap_groups[count.index])[0]])
+  type     = "external"
+  provider = vault.root
+}
+
+resource "vault_identity_group_alias" "root_group_alias" {
+  count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
+
+  depends_on  = [vault_identity_group.root_group]
+  name           = split(".", var.ldap_groups[count.index])[0]
+  mount_accessor = data.vault_auth_backend.ldap.accessor
+  canonical_id   = vault_identity_group.root_group[count.index].id
+  provider       = vault.root
+}
+
+resource "vault_identity_group" "group" {
+  count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
+
+  depends_on  = [vault_identity_group_alias.root_group_alias]
+  name             = split(".", var.ldap_groups[count.index])[0]
+  policies         = [var.namespace_policies[count.index]]
+  member_group_ids = vault_identity_group.root_group[count.index].id
+  provider         = vault.ns
+}
+
 resource "vault_mount" "pki" {
+  count                     = var.pki_path != "" ? 1 : 0
+
   depends_on                = [vault_namespace.namespace]
   provider                  = vault.ns
   path                      = var.pki_path
   type                      = "pki"
   default_lease_ttl_seconds = var.pki_default_lease_ttl_seconds
   max_lease_ttl_seconds     = var.pki_max_lease_ttl_seconds
-  count                     = var.pki_path != "" ? 1 : 0
   seal_wrap                 = var.pki_seal_wrap
 }
 
 resource "vault_pki_secret_backend_role" "role" {
+  count                              = var.pki_path != "" ? 1 : 0
+
   depends_on                         = [vault_mount.pki]
   provider                           = vault.ns
   backend                            = vault_mount.pki[count.index].path
   name                               = var.pki_role_name
-  count                              = var.pki_path != "" ? 1 : 0
   allow_any_name                     = var.pki_role_allow_any_name
   allow_bare_domains                 = var.pki_role_allow_bare_domains
   allow_glob_domains                 = var.pki_role_allow_glob_domains
@@ -89,6 +132,8 @@ resource "vault_pki_secret_backend_role" "role" {
 }
 
 resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_csr" {
+  count = var.pki_path != "" ? 1 : 0
+
   depends_on           = [vault_mount.pki]
   provider             = vault.ns
   backend              = vault_mount.pki[count.index].path
@@ -110,24 +155,24 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate_ca_c
   province             = var.pki_csr_province
   street_address       = var.pki_csr_street_address
   postal_code          = var.pki_csr_postal_code
-
-  count = var.pki_path != "" ? 1 : 0
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "csr_sign_ca" {
+  count          = var.pki_path != "" ? 1 : 0
+
   depends_on     = [vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr]
   provider       = vault.parent
   backend        = var.pki_csr_sign_ca_pki
   csr            = vault_pki_secret_backend_intermediate_cert_request.intermediate_ca_csr[count.index].csr
   use_csr_values = var.pki_csr_sign_ca_use_csr_values
   common_name    = var.pki_csr_sign_ca_common_name
-  count          = var.pki_path != "" ? 1 : 0
 }
 
 resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set_signed" {
+  count       = var.pki_path != "" ? 1 : 0
+
   depends_on  = [vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca]
   backend     = vault_mount.pki[count.index].path
   provider    = vault.ns
   certificate = vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca[count.index].certificate
-  count       = var.pki_path != "" ? 1 : 0
 }
