@@ -303,7 +303,7 @@ variable pki_csr_sign_ca_use_csr_values {
 #variable pki_signed_ca_ {
 #}
 
-variable kv2_path {
+variable kv_path {
   type    = string
   default = ""
 }
