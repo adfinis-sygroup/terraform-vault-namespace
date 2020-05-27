@@ -131,3 +131,11 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate_ca_set
   certificate = vault_pki_secret_backend_root_sign_intermediate.csr_sign_ca[count.index].certificate
   count       = var.pki_path != "" ? 1 : 0
 }
+
+resource "vault_mount" "kv2" {
+  depends_on                = [vault_namespace.namespace]
+  provider                  = vault.ns
+  path                      = var.kv2_path
+  type                      = "kv2"
+  count                     = var.kv2_path != "" ? 1 : 0
+}
