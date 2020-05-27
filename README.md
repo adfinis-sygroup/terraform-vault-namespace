@@ -23,7 +23,7 @@ namespaces
     mapping of ldap users to namespace groups and policies
 ```
 
-main.tf
+main.tf (policy files ending with .hcl must be in the same root in a subfolder "policies" and have the exact same name as the ldap groups)
 ```
 locals {
   policylist = fileset("policies/", "*.hcl")
