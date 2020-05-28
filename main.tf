@@ -84,7 +84,7 @@ resource "vault_identity_group" "group" {
   depends_on       = [vault_identity_group_alias.root_group_alias]
   name             = split(".", var.ldap_groups[count.index])[0]
   policies         = [var.namespace_policies[count.index]]
-  member_group_ids = vault_identity_group.root_group[count.index].id
+  member_group_ids = [vault_identity_group.root_group[count.index].id]
   provider         = vault.ns
 }
 
