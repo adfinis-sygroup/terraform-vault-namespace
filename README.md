@@ -31,7 +31,7 @@ locals {
 
 module "test1" {
   source = "github.com/adfinis-sygroup/terraform-vault-namespace"
-  namespace_policies = policylist
+  namespace_policies = local.policylist
   namespace_name = "test1"
   kv_path = "kv"
   ldap_path = "ldap"
@@ -45,7 +45,7 @@ module "test1" {
 
 module "test2" {
   source = "github.com/adfinis-sygroup/terraform-vault-namespace"
-  namespace_policies = policylist
+  namespace_policies = local.policylist
   namespace_name = "test2"
   parent_namespace_name = "test1"
   pki_path = "pki"
