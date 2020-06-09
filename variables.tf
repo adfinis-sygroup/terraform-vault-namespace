@@ -317,3 +317,8 @@ variable kv_path {
   type    = string
   default = ""
 }
+
+variable ssh_mount_path {
+  type    = string
+  default = "ssh"
+}

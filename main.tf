@@ -184,3 +184,30 @@ resource "vault_mount" "kv" {
   type                      = "kv-v2"
   count                     = var.kv_path != "" ? 1 : 0
 }
+
+resource "vault_mount" "ssh" {
+  path     = var.ssh_mount_path
+  type     = "ssh"
+  provider = vault.ns
+}
+
+resource "vault_ssh_secret_backend_ca" "ssh_ca" {
+  backend              = vault_mount.ssh.path
+  generate_signing_key = true
+  provider             = vault.ns
+}
+
+resource "vault_ssh_secret_backend_role" "ssh_role_example" {
+  name                       = "ssh_ca_example"
+  backend                    = vault_mount.ssh.path
+  key_type                   = "ca"
+  allow_user_certificates    = true
+  default_user               = "default"
+  allowed_users              = "default,baz"
+  # https://www.vaultproject.io/docs/secrets/ssh/signed-ssh-certificates#troubleshooting
+  default_extensions         = {
+    "permit-port-forwarding" = ""
+    "permit-pty"             = ""
+  }
+  provider                   = vault.ns
+}
