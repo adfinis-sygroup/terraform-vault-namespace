@@ -322,3 +322,41 @@ variable ssh_mount_path {
   type    = string
   default = "ssh"
 }
+
+variable ssh_generate_signing_key {
+  type    = bool
+  default = true
+}
+
+variable ssh_role_name {
+  type    = string
+  default = "ssh_ca_example"
+}
+
+variable ssh_key_type {
+  type    = string
+  default = "ca"
+}
+
+variable ssh_allow_user_certificates {
+  type    = bool
+  default = true
+}
+
+variable ssh_default_user {
+  type    = string
+  default = "default"
+}
+
+variable ssh_allowed_users {
+  type    = string
+  default = "default,baz"
+}
+
+variable ssh_default_extensions {
+  type    = map
+  default = {
+    "permit-port-forwarding" = ""
+    "permit-pty"             = ""
+  }
+}
