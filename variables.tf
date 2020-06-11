@@ -360,3 +360,38 @@ variable ssh_default_extensions {
     "permit-pty"             = ""
   }
 }
+
+variable ad_mount_path {
+  type    = string
+  default = "ad"
+}
+
+variable ad_default_lease_ttl {
+  type    = number
+  default = 86400 #1d
+}
+
+variable ad_max_lease_ttl {
+  type    = number
+  default = 604800 #7d
+}
+
+variable ad_url {
+  type    = string
+  default = ""
+}
+
+variable ad_userdn {
+  type    = string
+  default = ""
+}
+
+variable ad_bindpass {
+  type    = string
+  default = ""
+}
+
+variable ad_binddn {
+  type    = string
+  default = ""
+}

@@ -208,3 +208,25 @@ resource "vault_ssh_secret_backend_role" "ssh_role_example" {
   default_extensions         = var.ssh_default_extensions
   provider                   = vault.ns
 }
+
+resource "vault_mount" "ad" {
+  path                      = var.ad_mount_path
+  type                      = "ad"
+  default_lease_ttl_seconds = var.ad_default_lease_ttl
+  max_lease_ttl_seconds     = var.ad_max_lease_ttl
+  provider                  = vault.ns
+}
+
+resource "vault_generic_endpoint" "ad_config" {
+  depends_on = [ vault_mount.ad ]
+  path       = "${vault_mount.ad.path}/config"
+  data_json  =<<EOT
+  {
+    "url": "${var.ad_url}",
+    "userdn": "${var.ad_userdn}",
+    "bindpass": "${var.ad_bindpass}",
+    "binddn": "${var.ad_binddn}"
+  }
+EOT
+  provider   = vault.ns
+}
