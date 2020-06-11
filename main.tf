@@ -214,12 +214,13 @@ resource "vault_mount" "ad" {
   type                      = "ad"
   default_lease_ttl_seconds = var.ad_default_lease_ttl
   max_lease_ttl_seconds     = var.ad_max_lease_ttl
+  provider                  = vault.ns
 }
 
 resource "vault_generic_endpoint" "ad_config" {
   depends_on = [ vault_mount.ad ]
-  path = "${vault_mount.ad.path}/config"
-  data_json =<<EOT
+  path       = "${vault_mount.ad.path}/config"
+  data_json  =<<EOT
   {
     "url": "${var.ad_url}",
     "userdn": "${var.ad_userdn}",
@@ -227,4 +228,5 @@ resource "vault_generic_endpoint" "ad_config" {
     "binddn": "${var.ad_binddn}"
   }
 EOT
+  provider   = vault.ns
 }
