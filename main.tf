@@ -186,18 +186,21 @@ resource "vault_mount" "kv" {
 }
 
 resource "vault_mount" "ssh" {
+  count    = var.ssh_mount_path != "" ? 1 : 0
   path     = var.ssh_mount_path
   type     = "ssh"
   provider = vault.ns
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh_ca" {
+  depends_on           = [vault_mount.ssh]
   backend              = vault_mount.ssh.path
   generate_signing_key = var.ssh_generate_signing_key
   provider             = vault.ns
 }
 
 resource "vault_ssh_secret_backend_role" "ssh_role_example" {
+  depends_on                 = [vault_mount.ssh]
   name                       = var.ssh_role_name
   backend                    = vault_mount.ssh.path
   key_type                   = var.ssh_key_type
@@ -210,6 +213,7 @@ resource "vault_ssh_secret_backend_role" "ssh_role_example" {
 }
 
 resource "vault_mount" "ad" {
+  count                     = var.ad_mount_path != "" ? 1 : 0
   path                      = var.ad_mount_path
   type                      = "ad"
   default_lease_ttl_seconds = var.ad_default_lease_ttl
