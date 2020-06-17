@@ -193,16 +193,18 @@ resource "vault_mount" "ssh" {
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh_ca" {
+  count                = var.ssh_mount_path != "" ? 1 : 0
   depends_on           = [vault_mount.ssh]
-  backend              = vault_mount.ssh.path
+  backend              = vault_mount.ssh[count.index].path
   generate_signing_key = var.ssh_generate_signing_key
   provider             = vault.ns
 }
 
 resource "vault_ssh_secret_backend_role" "ssh_role_example" {
+  count                      = var.ssh_mount_path != "" ? 1 : 0
   depends_on                 = [vault_mount.ssh]
   name                       = var.ssh_role_name
-  backend                    = vault_mount.ssh.path
+  backend                    = vault_mount.ssh[count.index].path
   key_type                   = var.ssh_key_type
   allow_user_certificates    = var.ssh_allow_user_certificates
   default_user               = var.ssh_default_user
@@ -222,8 +224,9 @@ resource "vault_mount" "ad" {
 }
 
 resource "vault_generic_endpoint" "ad_config" {
+  count      = var.ad_mount_path != "" ? 1 : 0
   depends_on = [ vault_mount.ad ]
-  path       = "${vault_mount.ad.path}/config"
+  path       = "${vault_mount.ad[count.index].path}/config"
   data_json  =<<EOT
   {
     "url": "${var.ad_url}",
