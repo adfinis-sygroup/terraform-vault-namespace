@@ -65,6 +65,26 @@ variable ldap_provider {
   default = ""
 }
 
+variable ldap_provider_pre {
+  type    = string
+  default = ""
+}
+
+variable ldap_provider_dev {
+  type    = string
+  default = ""
+}
+
+variable ldap_pre_enabled {
+  type    = bool
+  default = false
+}
+
+variable ldap_dev_enabled {
+  type    = bool
+  default = false
+}
+
 variable ldap_groups {
   type    = list
   default = []
