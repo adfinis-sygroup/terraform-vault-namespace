@@ -59,11 +59,39 @@ data "vault_auth_backend" "ldap" {
   provider   = vault.root
 }
 
+data "vault_auth_backend" "ldap_pre" {
+  path     = var.ldap_provider_pre
+  provider = vault.root
+}
+
+data "vault_auth_backend" "ldap_dev" {
+  path     = var.ldap_provider_dev
+  provider = vault.root
+}
+
 resource "vault_identity_group" "root_group" {
   count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
 
   depends_on = [vault_ldap_auth_backend.ldap]
   name       = join("-", [var.ldap_provider, split(".", var.ldap_groups[count.index])[0]])
+  type       = "external"
+  provider   = vault.root
+}
+
+resource "vault_identity_group" "root_group_pre" {
+  count = var.ldap_pre_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on = [vault_ldap_auth_backend.ldap]
+  name       = join("-", [var.ldap_provider_pre, split(".", var.ldap_groups[count.index])[0]])
+  type       = "external"
+  provider   = vault.root
+}
+
+resource "vault_identity_group" "root_group_dev" {
+  count = var.ldap_dev_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on = [vault_ldap_auth_backend.ldap]
+  name       = join("-", [var.ldap_provider_dev, split(".", var.ldap_groups[count.index])[0]])
   type       = "external"
   provider   = vault.root
 }
@@ -78,6 +106,26 @@ resource "vault_identity_group_alias" "root_group_alias" {
   provider       = vault.root
 }
 
+resource "vault_identity_group_alias" "root_group_alias_pre" {
+  count = var.ldap_pre_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on     = [vault_identity_group.root_group_pre]
+  name           = split(".", var.ldap_groups[count.index])[0]
+  mount_accessor = data.vault_auth_backend.ldap_pre.accessor
+  canonical_id   = vault_identity_group.root_group_pre[count.index].id
+  provider       = vault.root
+}
+
+resource "vault_identity_group_alias" "root_group_alias_dev" {
+  count = var.ldap_dev_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on     = [vault_identity_group.root_group_dev]
+  name           = split(".", var.ldap_groups[count.index])[0]
+  mount_accessor = data.vault_auth_backend.ldap_dev.accessor
+  canonical_id   = vault_identity_group.root_group_dev[count.index].id
+  provider       = vault.root
+}
+
 resource "vault_identity_group" "group" {
   count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
 
@@ -85,6 +133,26 @@ resource "vault_identity_group" "group" {
   name             = split(".", var.ldap_groups[count.index])[0]
   policies         = [var.namespace_policies[count.index]]
   member_group_ids = [vault_identity_group.root_group[count.index].id]
+  provider         = vault.ns
+}
+
+resource "vault_identity_group" "group_pre" {
+  count = var.ldap_pre_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on       = [vault_identity_group_alias.root_group_alias_pre]
+  name             = split(".", var.ldap_groups[count.index])[0]
+  policies         = [var.namespace_policies[count.index]]
+  member_group_ids = [vault_identity_group.root_group_pre[count.index].id]
+  provider         = vault.ns
+}
+
+resource "vault_identity_group" "group_dev" {
+  count = var.ldap_dev_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
+
+  depends_on       = [vault_identity_group_alias.root_group_alias_dev]
+  name             = split(".", var.ldap_groups[count.index])[0]
+  policies         = [var.namespace_policies[count.index]]
+  member_group_ids = [vault_identity_group.root_group_dev[count.index].id]
   provider         = vault.ns
 }
 
