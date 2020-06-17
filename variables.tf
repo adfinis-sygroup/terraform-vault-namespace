@@ -320,7 +320,7 @@ variable kv_path {
 
 variable ssh_mount_path {
   type    = string
-  default = "ssh"
+  default = ""
 }
 
 variable ssh_generate_signing_key {
@@ -363,7 +363,7 @@ variable ssh_default_extensions {
 
 variable ad_mount_path {
   type    = string
-  default = "ad"
+  default = ""
 }
 
 variable ad_default_lease_ttl {
