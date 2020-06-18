@@ -72,7 +72,7 @@ data "vault_auth_backend" "ldap_dev" {
 resource "vault_identity_group" "root_group" {
   count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
 
-  depends_on = [vault_ldap_auth_backend.ldap]
+  depends_on = [data.vault_auth_backend.ldap]
   name       = join("-", [var.ldap_provider, split(".", var.ldap_groups[count.index])[0]])
   type       = "external"
   provider   = vault.root
@@ -81,7 +81,7 @@ resource "vault_identity_group" "root_group" {
 resource "vault_identity_group" "root_group_pre" {
   count = var.ldap_pre_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
 
-  depends_on = [vault_ldap_auth_backend.ldap]
+  depends_on = [data.vault_auth_backend.ldap_pre]
   name       = join("-", [var.ldap_provider_pre, split(".", var.ldap_groups[count.index])[0]])
   type       = "external"
   provider   = vault.root
@@ -90,7 +90,7 @@ resource "vault_identity_group" "root_group_pre" {
 resource "vault_identity_group" "root_group_dev" {
   count = var.ldap_dev_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
 
-  depends_on = [vault_ldap_auth_backend.ldap]
+  depends_on = [data.vault_auth_backend.ldap_dev]
   name       = join("-", [var.ldap_provider_dev, split(".", var.ldap_groups[count.index])[0]])
   type       = "external"
   provider   = vault.root
