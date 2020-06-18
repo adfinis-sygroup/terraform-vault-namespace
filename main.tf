@@ -100,7 +100,7 @@ resource "vault_identity_group_alias" "root_group_alias" {
   count = length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0
 
   depends_on     = [vault_identity_group.root_group]
-  name           = split(".", var.ldap_groups[count.index])[0]
+  name           = join("-", [var.ldap_provider, split(".", var.ldap_groups[count.index])[0], "-alias"])
   mount_accessor = data.vault_auth_backend.ldap.accessor
   canonical_id   = vault_identity_group.root_group[count.index].id
   provider       = vault.root
@@ -110,7 +110,7 @@ resource "vault_identity_group_alias" "root_group_alias_pre" {
   count = var.ldap_pre_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
 
   depends_on     = [vault_identity_group.root_group_pre]
-  name           = split(".", var.ldap_groups[count.index])[0]
+  name           = join("-", [var.ldap_provider_pre, split(".", var.ldap_groups[count.index])[0], "-alias"])
   mount_accessor = data.vault_auth_backend.ldap_pre.accessor
   canonical_id   = vault_identity_group.root_group_pre[count.index].id
   provider       = vault.root
@@ -120,7 +120,7 @@ resource "vault_identity_group_alias" "root_group_alias_dev" {
   count = var.ldap_dev_enabled ? length(var.ldap_groups) > 0 ? length(var.ldap_groups) : 0 : 0
 
   depends_on     = [vault_identity_group.root_group_dev]
-  name           = split(".", var.ldap_groups[count.index])[0]
+  name           = join("-", [var.ldap_provider_dev, split(".", var.ldap_groups[count.index])[0], "-alias"])
   mount_accessor = data.vault_auth_backend.ldap_dev.accessor
   canonical_id   = vault_identity_group.root_group_dev[count.index].id
   provider       = vault.root
